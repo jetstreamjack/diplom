@@ -19,7 +19,9 @@ class Server : public IServer
 {
 public:
     //virtual ~IServer() = default;
-    explicit Server(QObject *parent = 0);
+    explicit Server(std::shared_ptr<IConnectionController> connectionController,
+        std::shared_ptr<IConnectionObserver> connectionObserver,  
+        QObject *parent = 0);
 
     // add commentary
     int Run(std::string listenOn) override;
@@ -30,6 +32,8 @@ public slots:
     void incommingConnection(); // обработчик входящего подключения
 
 private:
+    std::shared_ptr<IConnectionController> m_connectionController;
+    std::shared_ptr<IConnectionObserver> m_connectionObserver;
     QTcpServer *m_server; // указатель на сервер
 };
 

@@ -16,7 +16,7 @@ public:
 
     void UnregisterClient(ClientHandle clientHandle) override;
 
-    TaskId ProcessNewTask(ClientHandle clientHandle, std::string taskRequest) override;
+    void ProcessNewTask(ClientHandle clientHandle, std::string taskRequest) override;
 
     std::string GetTaskResult(ClientHandle clientHandle) override;
 private:

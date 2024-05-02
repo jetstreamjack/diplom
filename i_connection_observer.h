@@ -1,17 +1,17 @@
-// #pragma once
+#pragma once
 
-// #include <vector>
-// #include <string>
+#include <vector>
+#include <string>
 
-// namespace server_controller {
+namespace connection_controller {
 
-// class IConnectionObserver
-// {
-// public:
-//     virtual ~IConnectionObserver() = default;
+class IConnectionObserver
+{
+public:
+    virtual ~IConnectionObserver() = default;
 
-//     // add commentary
-//     virtual void ObserveSocket(std::unique_ptr<ISocket> socket) = 0;
-// };
+    // add commentary
+    virtual void ObserveConnection(std::unique_ptr<IConnection> connection) = 0;
+};
 
-// } // server_controller
+} // namespace connection_controller

@@ -60,7 +60,8 @@ void ConnectionController::ProcessNewTask(ClientHandle clientHandle,
     std::transform(pathVec.begin(), pathVec.end(), pathDoubleVec.begin(),
                 [](std::string str){
     return std::stod(str);} );
-            m_clientMap[clientHandle] = m_balancer->AddTask(funcNum, pathDoubleVec);
+    
+    m_clientMap[clientHandle] = m_balancer->AddTask(funcNum, pathDoubleVec);
   }
 }
 

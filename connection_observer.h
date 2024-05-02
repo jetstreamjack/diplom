@@ -1,27 +1,27 @@
-// #pragma once
+#pragma once
 
-// #include <vector>
-// #include <string>
+#include <vector>
+#include <string>
 
-// namespace server_controller {
+namespace connection {
 
-// using SockId = int;
-// //using SockPair = std::pair<SockId, std::unique_ptr>
-// using SocketMap = std::unordored_map<SockId, std::unique_ptr<ISocket>>;
+using SockId = int;
+//using SockPair = std::pair<SockId, std::unique_ptr>
+using ConnectionMap = std::unordored_map<SockId, std::unique_ptr<IConnection>>;
 
-// class ConnectionObserver : public IConnectionObserver
-// {
-// public:
-//     explicit ConnectionObserver();
-//     //virtual ~IConnectionObserver() = default;
+class ConnectionObserver : public IConnectionObserver
+{
+public:
+    explicit ConnectionObserver();
+    //virtual ~IConnectionObserver() = default;
 
-//     // add commentary
-//     void ObserveSocket(std::unique_ptr<ISocket> socket) override;
-// // public slots: 
-// //     void readyRead();
+    // add commentary
+    void ObserveConnection(std::unique_ptr<IConnection> connection) override;
+// public slots: 
+//     void readyRead();
 
-// private:
-//     SocketMap m_sockMap;
-// };
+private:
+    ConnectionMap m_connectionMap;
+};
 
-// } // server_controller
+} // connection

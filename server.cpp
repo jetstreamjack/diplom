@@ -1,8 +1,10 @@
 #include "server.h"
 
-MyServer::MyServer(QObject *parent) :
-    QObject(parent),
-    firstSocket(NULL)
+MyServer::MyServer(std::shared_ptr<IConnectionController> connectionController,
+std::shared_ptr<IConnectionObserver> connectionObserver, QObject *parent) :
+    m_connectionController(std::move(connectionController)), 
+    m_connectionObserver(std::move(connectionObserver))
+    QObject(parent)
 {
     m_server = new QTcpServer(this);
     //qDebug() << "server listen = " << server->listen(QHostAddress::Any, 6666);
@@ -18,15 +20,5 @@ void Run(std::string listeningOn)
 void MyServer::incommingConnection() // обработчик подключений
 {
     QTcpSocket * socket = server->nextPendingConnection(); // получаем сокет нового входящего подключения
-    connect(socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(stateChanged(QAbstractSocket::SocketState))); // делаем обработчик изменения статуса сокета
-    if (!firstSocket) { // если у нас нет "вещающего", то данное подключение становится вещающим
-        connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead())); // подключаем входящие сообщения от вещающего на наш обработчик
-        socket->write("server"); // говорим ему что он "вещает"
-        firstSocket = socket; // сохраняем себе"
-        qDebug() << "this one is server";
-    }
-    else { // иначе говорим подключенному что он "получатель"
-        socket->write("client");
-        sockets << socket;
-    }
+    m_connectionObserver->ObserveConnection(std::make_unique<QtConnection>(socket, m_connectionController));
 }

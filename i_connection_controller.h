@@ -16,7 +16,7 @@ public:
 
     virtual void UnregisterClient(ClientHandle clientHandle) = 0;
 
-    virtual TaskId ProcessNewTask(ClientHandle clientHandle, std::string taskRequest) = 0;
+    virtual void ProcessNewTask(ClientHandle clientHandle, std::string taskRequest) = 0;
 
     virtual double GetTaskResult(ClientHandle clientHandle) = 0;
 };
