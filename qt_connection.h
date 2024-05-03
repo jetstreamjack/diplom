@@ -1,11 +1,21 @@
 #pragma once
 
 #include "i_connection.h"
+#include "connection_controller.h"
 
 #include <vector>
 #include <string>
 
-namespace socket {
+#include <QObject>
+#include <QTcpServer>
+#include <QTcpSocket>
+#include <QDebug>
+#include <QByteArray>
+#include <QDataStream>
+
+#include <thread>
+
+namespace connection {
 
 class QtConnection : public IConnection
 {
@@ -29,7 +39,7 @@ private:
     bool m_stopConnection{false};
     ConnectionState m_currentState{ConnectionState::Disconnected};
     std::thread m_mainThread;
-    ClientHandle m_clientHandle;
+    connection_controller::ClientHandle m_clientHandle;
 };
 
-} // socket
+} // namespace connection

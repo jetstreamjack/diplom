@@ -18,7 +18,7 @@ public:
 
     virtual void ProcessNewTask(ClientHandle clientHandle, std::string taskRequest) = 0;
 
-    virtual double GetTaskResult(ClientHandle clientHandle) = 0;
+    virtual std::string GetTaskResult(ClientHandle clientHandle) = 0;
 };
 
 } // balancer

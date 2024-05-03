@@ -8,6 +8,14 @@ set ( CMAKE_C_COMPILER "/usr/bin/gcc" )
 
 project(hello LANGUAGES CXX CUDA)
 enable_language(CUDA)
+
+#Find includes in corresponding build directories
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+# Instruct CMake to run moc automatically when needed.
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
 #add_executable(hello hello.cu)
 
 #project(MY_PROJECT)
@@ -35,10 +43,23 @@ add_executable(hello
   particle.cu
   v3.cu
   v3.h
+  i_connection.h
+  qt_connection.h
+  qt_connection.cpp
+  i_connection_observer.h
+  connection_observer.h
+  connection_observer.cpp
+  i_connection_controller.h
+  connection_controller.h
+  connection_controller.cpp
+  i_server.h
+  server.h
+  server.cpp
   )
 
 find_package(Qt6 REQUIRED COMPONENTS Network)
 target_link_libraries(${PROJECT_NAME} CUDA::cudart Qt6::Network)
+
 
 #target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Network)
 

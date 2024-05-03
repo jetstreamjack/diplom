@@ -4,11 +4,11 @@
 
 namespace connection {
 
-enum class ConnectionState : uint8_t
+enum ConnectionState
 {
     Disconnected,
     Connected
-}
+};
 
 class IConnection
 {

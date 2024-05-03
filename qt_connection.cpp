@@ -1,11 +1,9 @@
-#pragma once
-
 #include "qt_connection.h"
 
 #include <vector>
 #include <string>
 
-namespace socket {
+namespace connection {
 
     QtConnection::QtConnection(QTcpSocket *socket,
     std::shared_ptr<connection_controller::ConnectionController> connectionController) 
@@ -29,16 +27,16 @@ namespace socket {
     {
         while(m_stopConnection && m_socket->state() == QTcpSocket::ConnectedState)
         {
-            waitForReadyRead();
+            m_socket->waitForReadyRead();
             m_currentState = ConnectionState::Connected;
             QByteArray arr =  m_socket->readAll();
             auto request = arr.toStdString();
             m_connectionController->ProcessNewTask(m_clientHandle, request);
             auto res = m_connectionController->GetTaskResult(m_clientHandle);
-            m_socket->write(fromStdString(res));
+            m_socket->write(QByteArray(res.c_str(), res.length()));
         }
         m_currentState = ConnectionState::Disconnected;
-        m_connectionController->UnregisterClient();
+        m_connectionController->UnregisterClient(m_clientHandle);
     }
 
     ConnectionState QtConnection::GetConnectionState()
@@ -46,4 +44,4 @@ namespace socket {
         return m_currentState;
     }
 
-} // socket
+} // connection

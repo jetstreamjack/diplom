@@ -1,7 +1,11 @@
-#pragma once
+#include "connection_controller.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
+#include <chrono>
+#include <random>
+#include <sstream>
 
 namespace connection_controller {
 
@@ -15,8 +19,9 @@ ClientHandle GenerateUniqId() {
 
 std::vector<std::string> SplitString(std::string currentString,
                                      char delimeter) {
-  std::vector result;
-  std::stringstream stringStream(currentString);
+  std::vector<std::string> result;
+  std::stringstream stringStream{currentString};
+  std::string str;
   while (getline(stringStream, str, delimeter)) {
     result.push_back(str);
   }
@@ -43,7 +48,7 @@ void ConnectionController::ProcessNewTask(ClientHandle clientHandle,
                                           std::string taskRequest) {
   if (!CheckClient(clientHandle)) {
     printf("Client with handle: %i not found!", clientHandle);
-    return {};
+    return ;
   }
 
   auto request = taskRequest.substr(0, 5);
@@ -53,7 +58,7 @@ void ConnectionController::ProcessNewTask(ClientHandle clientHandle,
     auto splitedVec = SplitString(requestBody, '*');
     auto funcNum = std::stoi(splitedVec[0]);
 
-    auto pathVec = SplitString(SplitString(splitedVec[2], '|');
+    auto pathVec = SplitString(splitedVec[2], '|');
 
     std::vector<double> pathDoubleVec;
     pathDoubleVec.resize(pathVec.size());
@@ -68,7 +73,7 @@ void ConnectionController::ProcessNewTask(ClientHandle clientHandle,
 bool ConnectionController::CheckClient(ClientHandle clientHandle) {
   return std::find_if(m_clientMap.begin(), m_clientMap.end(),
                       [&](std::pair<ClientHandle, balancer::TaskId> client) {
-                        return client.first == clientHandle
+                        return client.first == clientHandle;
                       }) != m_clientMap.end();
 }
 
@@ -79,8 +84,12 @@ std::string ConnectionController::GetTaskResult(ClientHandle clientHandle) {
   }
   auto result =
       std::to_string(m_balancer->GetTaskResult(m_clientMap[clientHandle]));
-  m_balancer.erase(clientHandle);
+  m_clientMap.erase(clientHandle);
   return result;
+}
+void ConnectionController::UnregisterClient(ClientHandle clientHandle)
+{
+  m_clientMap.erase(clientHandle);
 }
 
 } // namespace connection_controller

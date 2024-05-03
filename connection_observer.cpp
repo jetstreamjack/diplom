@@ -1,11 +1,11 @@
-#pragma once
-
 #include "connection_observer.h"
 
 #include <vector>
 #include <string>
+#include <random>
+#include <chrono>
 
-namespace server_controller {
+namespace connection {
 
 namespace {
     SockId GenerateTaskId()
@@ -18,7 +18,7 @@ namespace {
 
 } // namespace
 
-explicit ConnectionObserver::ConnectionObserver(){}
+ConnectionObserver::ConnectionObserver(){}
 
     // add commentary
 void ConnectionObserver::ObserveConnection(std::unique_ptr<IConnection> connection)
@@ -27,4 +27,4 @@ void ConnectionObserver::ObserveConnection(std::unique_ptr<IConnection> connecti
     m_connectionMap.insert(std::make_pair(GenerateTaskId(), std::move(connection)));
 }
 
-} // server_controller
+} // namespace connection
