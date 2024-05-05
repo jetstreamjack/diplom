@@ -7,6 +7,8 @@
 #include <random>
 #include <sstream>
 
+#include <QCoreApplication>
+
 namespace connection_controller {
 
 namespace {
@@ -40,25 +42,32 @@ ConnectionController::ConnectionController(
 
 ClientHandle ConnectionController::RegisterClient() {
   auto id = GenerateUniqId();
+  qDebug() << "Id is = " << id;
   m_clientMap.insert(std::make_pair(id, 0));
   return id;
 }
 
 void ConnectionController::ProcessNewTask(ClientHandle clientHandle,
                                           std::string taskRequest) {
+  
   if (!CheckClient(clientHandle)) {
-    printf("Client with handle: %i not found!", clientHandle);
+    qDebug() << "Client with handle:" << clientHandle << "not found!";
     return ;
   }
 
   auto request = taskRequest.substr(0, 5);
 
-  if (request == СalculationPacket) {
-    auto requestBody = taskRequest.substr(5);
-    auto splitedVec = SplitString(requestBody, '*');
-    auto funcNum = std::stoi(splitedVec[0]);
+  qDebug() << "General request " << QString::fromStdString(request);
 
-    auto pathVec = SplitString(splitedVec[2], '|');
+  if (request == СalculationPacket) {
+
+    auto requestBody = taskRequest.substr(5);
+    qDebug() << "Request body:" << QString::fromStdString(requestBody);
+    auto splitedVec = SplitString(requestBody, '*');
+
+    auto funcNum = std::stoi(splitedVec[1]);
+
+    auto pathVec = SplitString(splitedVec[3], '|');
 
     std::vector<double> pathDoubleVec;
     pathDoubleVec.resize(pathVec.size());
@@ -79,12 +88,15 @@ bool ConnectionController::CheckClient(ClientHandle clientHandle) {
 
 std::string ConnectionController::GetTaskResult(ClientHandle clientHandle) {
   if (!CheckClient(clientHandle)) {
-    printf("Client with handle: %i not found!", clientHandle);
+    qDebug() << "Client with handle:" << clientHandle << "not found!";
     return {};
   }
-  auto result =
-      std::to_string(m_balancer->GetTaskResult(m_clientMap[clientHandle]));
-  m_clientMap.erase(clientHandle);
+  std::string result;
+  if (m_clientMap[clientHandle])
+  {
+    result =
+        std::to_string(m_balancer->GetTaskResult(m_clientMap[clientHandle]));
+  }
   return result;
 }
 void ConnectionController::UnregisterClient(ClientHandle clientHandle)

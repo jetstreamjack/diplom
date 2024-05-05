@@ -1,11 +1,8 @@
 
 #include "balancer.h"
 #include "gpu_controller.h"
-#include "i_balancer.h"
-#include "i_gpu_controller.h"
 
 #include <vector>
-// #include <cstdin.h>
 #include <exception>
 #include <string>
 
@@ -15,26 +12,28 @@
 #include <random>
 #include <unordered_map>
 
+#include <QCoreApplication>
+
 namespace balancer {
 
 __global__ void ProcessTask(int numFunc, double *path, double *res,
                             controller::GpuController *gpuController) {
-  path = path;
-  res = res;
-  numFunc = numFunc;
-  // gpuController->InvokeClasterFunction(numFunc, path, res);
-  gpuController->Dude(numFunc, path, res);
+  gpuController->InvokeClasterFunction(numFunc, path, res);
 
-  //*res = resW;
 }
 
-Balancer::Balancer(std::unique_ptr<controller::IGpuController> gpuController)
+Balancer::Balancer(std::unique_ptr<controller::GpuController> gpuController)
     : m_gpuController(std::move(gpuController)) {
   // if(!m_gpuController)
   // {
   //     throw std::exception("GpuController is null!");
   // }
   // HANDLE_ERROR(cudaStreamCreate(&stream0));
+
+  cudaMalloc((void **)&c_gpuController, sizeof(controller::GpuController));
+  //controller::GpuController *gpu = new controller::GpuController();
+  cudaMemcpy(c_gpuController, m_gpuController.get(), sizeof(controller::GpuController),
+             cudaMemcpyHostToDevice);
 }
 
 // add commentary
@@ -45,15 +44,10 @@ TaskId Balancer::AddTask(int numFunc, PathVec path) {
 
   auto error = cudaGetLastError();
   if (error != cudaSuccess) {
+    qDebug() << "WTF ????!";
     printf("113 %s\n", cudaGetErrorString(error));
     exit(1);
   }
-
-  // todo(odnorob): in ctor
-  cudaMalloc((void **)&gpuController, sizeof(controller::GpuController));
-  controller::GpuController *gpu = new controller::GpuController();
-  cudaMemcpy(gpuController, gpu, sizeof(controller::GpuController),
-             cudaMemcpyHostToDevice);
 
   cudaDeviceSynchronize();
 
@@ -65,7 +59,7 @@ TaskId Balancer::AddTask(int numFunc, PathVec path) {
 
   ProcessTask<<<1, 1>>>(numFunc, m_taskMap.find(taskId)->second.m_cudaMem,
                         m_taskMap.find(taskId)->second.m_resutlMem,
-                        gpuController);
+                        c_gpuController);
 
   return taskId;
 }
@@ -73,6 +67,7 @@ double Balancer::GetTaskResult(TaskId taskId) {
   cudaDeviceSynchronize();
   auto res = m_taskMap.find(taskId)->second.GetResult();
   m_taskMap.erase(taskId);
+
   return res;
 }
 
@@ -122,7 +117,7 @@ Task::Task(PathVec path) : m_vecSize(path.size()) {
 
   auto error = cudaGetLastError();
   if (error != cudaSuccess) {
-    printf("17 %s\n", cudaGetErrorString(error));
+    printf(" 17 %s\n", cudaGetErrorString(error));
     exit(1);
   }
 }
@@ -138,15 +133,16 @@ double Task::GetResult() {
   cudaDeviceSynchronize();
   auto error = cudaGetLastError();
   if (error != cudaSuccess) {
-    printf("2 %s\n", cudaGetErrorString(error));
+    printf(" 2  %s\n", cudaGetErrorString(error));
     exit(1);
   }
   double *result = (double *)malloc(sizeof(double));
   cudaMemcpy(result, m_resutlMem, sizeof(double), cudaMemcpyDeviceToHost);
   cudaDeviceSynchronize();
   double res = *result;
-  printf("res2:%f", *result);
+  printf("res2:%f \n", *result);
   free(result);
+
   return res;
 }
 

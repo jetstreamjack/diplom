@@ -1,16 +1,20 @@
 #pragma once
 
-#include "i_gpu_controller.h"
-
 #include <vector>
 
 namespace controller {
 
-class GpuController : public IGpuController
+class GpuController
 {
 public:
-    __host__ __device__ void InvokeClasterFunction(int funcNumber, double* pathVec, double* res) override;
-    __host__ __device__ void Dude(int numFunc, double* path, double* res);
+
+    /**
+     * @brief Invoker Claster function
+     * @param funcNumber - number of function
+     * @param path - data for function
+     * @param res - result of function
+     */
+    __host__ __device__ void InvokeClasterFunction(int numFunc, double* path, double* res);
 private:
     __host__ __device__ double Klaster1(double* path);
     __host__ __device__ double BenchRozenbrok(double* path);

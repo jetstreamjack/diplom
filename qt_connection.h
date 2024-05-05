@@ -21,9 +21,10 @@ class QtConnection : public IConnection
 {
 public:
     explicit QtConnection(QTcpSocket *socket, 
-    std::shared_ptr<connection_controller::ConnectionController> connectionController);
-    //todo(odnorob): add destructor
-    // add commentary
+        std::shared_ptr<connection_controller::ConnectionController> connectionController);
+
+    ~QtConnection() override;
+
     void StopConnection() override;
 
     void StartObserving() override;
@@ -39,6 +40,7 @@ private:
     bool m_stopConnection{false};
     ConnectionState m_currentState{ConnectionState::Disconnected};
     std::thread m_mainThread;
+    QThread* m_thread;
     connection_controller::ClientHandle m_clientHandle;
 };
 

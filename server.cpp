@@ -9,8 +9,6 @@ Server::Server(std::shared_ptr<connection_controller::ConnectionController> conn
     QObject(parent)
 {
     m_server = new QTcpServer(this);
-    //qDebug() << "server listen = " << server->listen(QHostAddress::Any, 6666);
-    //connect(server, SIGNAL(newConnection()), this, SLOT(incommingConnection()));
 }
 
 void Server::Run(std::string listeningOn)
@@ -19,15 +17,16 @@ void Server::Run(std::string listeningOn)
     connect(m_server, SIGNAL(newConnection()), this, SLOT(incommingConnection()));
 }
 
-void Server::incommingConnection() // обработчик подключений
+void Server::incommingConnection()
 {
-    QTcpSocket * socket = m_server->nextPendingConnection(); // получаем сокет нового входящего подключения
+    qDebug() << "incomming connection ready";
+    QTcpSocket * socket = m_server->nextPendingConnection();
     m_connectionObserver->ObserveConnection(std::move(std::make_unique<connection::QtConnection>(socket, m_connectionController)));
 }
 
 void Server::Stop()
 {
-    //todo(odnorob)
+    m_server->close();
 }
 
 }

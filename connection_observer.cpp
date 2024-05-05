@@ -20,7 +20,6 @@ namespace {
 
 ConnectionObserver::ConnectionObserver(){}
 
-    // add commentary
 void ConnectionObserver::ObserveConnection(std::unique_ptr<IConnection> connection)
 {
     connection->StartObserving();
