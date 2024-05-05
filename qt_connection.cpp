@@ -58,7 +58,7 @@ namespace connection {
         return m_currentState;
     }
 
-    ~QtConnection::QtConnection()
+    QtConnection::~QtConnection()
     {
         m_stopConnection = true;
         m_mainThread.detach();

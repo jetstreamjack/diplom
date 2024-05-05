@@ -18,17 +18,11 @@ find_package(CUDAToolkit REQUIRED)
 
 add_executable(hello
   main.cu
-  randomize.cpp
-  randomize.h
   gpu_controller.h
   gpu_controller.cu
   i_balancer.h
   balancer.h
   balancer.cu
-  particle.h
-  particle.cu
-  v3.cu
-  v3.h
   i_connection.h
   qt_connection.h
   qt_connection.cpp
