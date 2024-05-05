@@ -12,7 +12,6 @@ namespace {
     {
         std::mt19937 gen(std::chrono::system_clock::now().time_since_epoch().count());
         std::uniform_int_distribution<int> distr(0, 1000000);
-        //TODO(odnorob): add check on unique 
         return distr(gen);
     }
 

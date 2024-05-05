@@ -43,7 +43,6 @@ private:
     controller::GpuController* c_gpuController;
     std::map<TaskId, Task> m_taskMap;
     std::vector<Task> m_vec;
-    //todo(odnorob): add map of stream and double buf
     cudaStream_t stream0;
     double* m_cudaMem;
     double* m_resutlMem;
