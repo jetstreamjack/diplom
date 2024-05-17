@@ -1,0 +1,82 @@
+@startuml classDiagramGpuSide
+
+interface IConnectionController {
+
+  + ClientHandle RegisterClient()
+  + void UnregisterClient(ClientHandle clientHandle)
+  + void ProcessNewTask(ClientHandle clientHandle, std::string taskRequest)
+  + std::string GetTaskResult(ClientHandle clientHandle)
+}
+
+
+class ConnectionController {
+
+  + ClientHandle RegisterClient()
+  + void UnregisterClient(ClientHandle clientHandle)
+  + void ProcessNewTask(ClientHandle clientHandle, std::string taskRequest)
+  + std::string GetTaskResult(ClientHandle clientHandle)
+
+  - bool CheckClient(ClientHandle clientHandle)
+
+  - const std::string СalculationPacket{"WAYAG"}
+  - std::unique_ptr<balancer::IBalancer> m_balancer
+  - std::unordered_map<ClientHandle, balancer::TaskId> m_clientMap
+}
+
+interface IBalancer {
+
+  + TaskId AddTask(int numFunc, PathVec path)
+
+  + double GetTaskResult(TaskId taskId)
+}
+
+class Balancer {
+  + TaskId AddTask(int numFunc, PathVec path)
+  + double GetTaskResult(TaskId taskId)
+
+  - TaskId GenerateTaskId()
+
+  - std::unique_ptr<controller::GpuController> m_gpuController
+  - controller::GpuController *c_gpuController
+  - std::map<TaskId, Task> m_taskMap
+  - std::vector<Task> m_vec
+  - cudaStream_t stream0
+  - double *m_cudaMem
+  - double *m_resutlMem
+}
+
+class GpuController {
+
+  + __host__ __device__ void InvokeClasterFunction(int numFunc, double *path, double *res)
+  - __host__ __device__ double Klaster1(double *path)
+  - __host__ __device__ double BenchRozenbrok(double *path)
+  - __host__ __device__ double BenchMultiFunction(double *path)
+  - __host__ __device__ double BenchBirdFunction(double *path)
+  - __host__ __device__ double BenchShevefeliaFunction(double *path)
+  - __host__ __device__ double BenchRozenbrokx10(double *path)
+  - __host__ __device__ double BenchMultiFunctionx10(double *path)
+  - __host__ __device__ double Klaster2(double *path)
+  - __host__ __device__ double Klaster2o(double *path)
+  - __host__ __device__ double Klaster2no(double *path)
+  - __host__ __device__ double Klaster2so(double *path)
+  - __host__ __device__ double Klaster2nso(double *path)
+  - __host__ __device__ double Klaster3(double *path)
+  - __host__ __device__ double Bench4(double *path)
+  - __host__ __device__ double Bench4x(double *path)
+  - __host__ __device__ double Bench4x1(double *path)
+  - __host__ __device__ double Bench4x2(double *path)
+  - __host__ __device__ double Bench4x3(double *path)
+  - __host__ __device__ double Bench4x4(double *path)
+  - __host__ __device__ double Bench4x22(double *path)
+  - __host__ __device__ double Bench4x222(double *path)
+  - __host__ __device__ double Bench4x2222(double *path)
+  - __host__ __device__ double Bench4xo2222(double *path)
+
+}
+
+IConnectionController --|> ConnectionController
+IBalancer --|> Balancer
+IBalancer --* ConnectionController
+GpuController --* Balancer
+
+@enduml

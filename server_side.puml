@@ -1,0 +1,15 @@
+@startuml sequenceServerSide
+
+actor       User       as User
+participant Server as Server
+participant ConnectionObserver as ConnectionObserver
+participant QtConnection as QtConnection
+
+
+User -> Server: Connect
+Server -> Server: newConnection
+Server -> Server: incommingConnection(socket)
+Server -> ConnectionObserver: ObserveConnection(QtConnection)
+ConnectionObserver -> QtConnection: StartObserving
+
+@enduml

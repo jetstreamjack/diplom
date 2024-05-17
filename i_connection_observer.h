@@ -2,9 +2,9 @@
 
 #include "i_connection.h"
 
-#include <vector>
-#include <string>
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace connection {
 
@@ -12,17 +12,16 @@ namespace connection {
  * @brief It is used to maintain current connections
  * @details as an example, close unnecessary connections
  */
-class IConnectionObserver
-{
+class IConnectionObserver {
 public:
-    virtual ~IConnectionObserver() = default;
+  virtual ~IConnectionObserver() = default;
 
-    /**
-     * @brief registers a connection for its maintenance
-     * 
-     * @param connection - incoming connection
-     */
-    virtual void ObserveConnection(std::unique_ptr<IConnection> connection) = 0;
+  /**
+   * @brief registers a connection for its maintenance
+   *
+   * @param connection - incoming connection
+   */
+  virtual void ObserveConnection(std::unique_ptr<IConnection> connection) = 0;
 };
 
 } // namespace connection

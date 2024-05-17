@@ -1,0 +1,12 @@
+@startuml sequenceServerSide
+
+participant ConnectionController as ConnectionController
+participant Balancer as Balancer
+participant GpuController as GpuController  
+
+ConnectionController -> Balancer: AddTask(numFunc, funcData)
+return clientHandle
+Balancer -> GpuController: InvokeClasterFunction(numFunc, funcData, result)
+return result
+
+@enduml

@@ -1,0 +1,21 @@
+@startuml sequenceServerSide
+
+participant QtConnection as QtConnection
+participant QTcpSocket as QTcpSocket 
+participant ConnectionController as ConnectionController
+
+QtConnection -> ConnectionController : RegisterClient()
+return clientHandle
+QtConnection -> QTcpSocket: waitForReadyRead()
+
+QtConnection -> QTcpSocket: readAll()
+return data
+
+QtConnection -> ConnectionController: ProcessNewTask(clientHandle, data)
+
+QtConnection -> ConnectionController: GetTaskResult(clientHandle)
+return taskResult
+QtConnection -> QTcpSocket: write(taskResult)
+
+
+@enduml

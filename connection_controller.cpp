@@ -1,11 +1,11 @@
 #include "connection_controller.h"
 
 #include <algorithm>
-#include <string>
-#include <vector>
 #include <chrono>
 #include <random>
 #include <sstream>
+#include <string>
+#include <vector>
 
 #include <QCoreApplication>
 
@@ -48,10 +48,10 @@ ClientHandle ConnectionController::RegisterClient() {
 
 void ConnectionController::ProcessNewTask(ClientHandle clientHandle,
                                           std::string taskRequest) {
-  
+
   if (!CheckClient(clientHandle)) {
     qDebug() << "Client with handle:" << clientHandle << "not found!";
-    return ;
+    return;
   }
 
   auto request = taskRequest.substr(0, 5);
@@ -71,9 +71,8 @@ void ConnectionController::ProcessNewTask(ClientHandle clientHandle,
     std::vector<double> pathDoubleVec;
     pathDoubleVec.resize(pathVec.size());
     std::transform(pathVec.begin(), pathVec.end(), pathDoubleVec.begin(),
-                [](std::string str){
-    return std::stod(str);} );
-    
+                   [](std::string str) { return std::stod(str); });
+
     m_clientMap[clientHandle] = m_balancer->AddTask(funcNum, pathDoubleVec);
   }
 }
@@ -91,15 +90,13 @@ std::string ConnectionController::GetTaskResult(ClientHandle clientHandle) {
     return {};
   }
   std::string result;
-  if (m_clientMap[clientHandle])
-  {
+  if (m_clientMap[clientHandle]) {
     result =
         std::to_string(m_balancer->GetTaskResult(m_clientMap[clientHandle]));
   }
   return result;
 }
-void ConnectionController::UnregisterClient(ClientHandle clientHandle)
-{
+void ConnectionController::UnregisterClient(ClientHandle clientHandle) {
   m_clientMap.erase(clientHandle);
 }
 

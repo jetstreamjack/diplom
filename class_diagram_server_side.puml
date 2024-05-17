@@ -1,0 +1,78 @@
+@startuml classDiagramServerSide
+
+class Server {
+    + void Run(std::string listenOn)
+    + void Stop()
+    + void incommingConnection()
+
+    - std::shared_ptr<connection_controller::ConnectionController> m_connectionController;
+    - std::shared_ptr<connection::IConnectionObserver> m_connectionObserver;
+    - QTcpServer *m_server;
+
+}
+
+interface IConnection {
+
+  + void StopConnection()
+
+  + void StartObserving()
+
+  + ConnectionState GetConnectionState()
+}
+
+interface IServer {
+    + void Run(std::string listenOn)
+
+    + void Stop()
+}
+
+interface IConnectionObserver {
+  + void ObserveConnection(std::unique_ptr<IConnection> connection)
+}
+
+class ConnectionObserver {
+
+  + void ObserveConnection(std::unique_ptr<IConnection> connection)
+
+  - ConnectionMap m_connectionMap
+}
+
+class QtConnection {
+
+  + void StopConnection()
+
+  + void StartObserving()
+
+  + ConnectionState GetConnectionState()
+
+  - void MainThread()
+
+  - QTcpSocket *m_socket
+  - std::shared_ptr<connection_controller::IConnectionController> m_connectionController
+  - bool m_stopConnection{false}
+  - ConnectionState m_currentState{ConnectionState::Disconnected}
+  - std::thread m_mainThread
+  - QThread *m_thread
+  - connection_controller::ClientHandle m_clientHandle
+}
+
+interface IConnectionController {
+
+  + ClientHandle RegisterClient()
+
+  + void UnregisterClient(ClientHandle clientHandle)
+
+  + void ProcessNewTask(ClientHandle clientHandle, std::string taskRequest)
+
+  + std::string GetTaskResult(ClientHandle clientHandle)
+}
+
+IConnection --|> QtConnection
+Server --|> IServer
+ConnectionObserver --|> IConnectionObserver
+IConnectionObserver --* Server
+IConnection --o ConnectionObserver
+IConnectionController --o Server
+IConnectionController --o QtConnection
+
+@enduml

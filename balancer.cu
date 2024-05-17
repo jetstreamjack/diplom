@@ -24,38 +24,17 @@ __global__ void ProcessTask(int numFunc, double *path, double *res,
 
 Balancer::Balancer(std::unique_ptr<controller::GpuController> gpuController)
     : m_gpuController(std::move(gpuController)) {
-  // if(!m_gpuController)
-  // {
-  //     throw std::exception("GpuController is null!");
-  // }
-  // HANDLE_ERROR(cudaStreamCreate(&stream0));
-
   cudaMalloc((void **)&c_gpuController, sizeof(controller::GpuController));
-  //controller::GpuController *gpu = new controller::GpuController();
   cudaMemcpy(c_gpuController, m_gpuController.get(), sizeof(controller::GpuController),
              cudaMemcpyHostToDevice);
 }
 
-// add commentary
 TaskId Balancer::AddTask(int numFunc, PathVec path) {
   TaskId taskId = GenerateTaskId();
 
   m_taskMap.insert(std::pair<TaskId, Task>(taskId, Task(path)));
 
-  auto error = cudaGetLastError();
-  if (error != cudaSuccess) {
-    qDebug() << "WTF ????!";
-    printf("113 %s\n", cudaGetErrorString(error));
-    exit(1);
-  }
-
   cudaDeviceSynchronize();
-
-  error = cudaGetLastError();
-  if (error != cudaSuccess) {
-    printf("16 %s\n", cudaGetErrorString(error));
-    exit(1);
-  }
 
   ProcessTask<<<1, 1>>>(numFunc, m_taskMap.find(taskId)->second.m_cudaMem,
                         m_taskMap.find(taskId)->second.m_resutlMem,
@@ -87,7 +66,7 @@ Task::Task(const Task &task) {
 
   auto error = cudaGetLastError();
   if (error != cudaSuccess) {
-    printf("1123 %s\n", cudaGetErrorString(error));
+    printf("Task: GPU error %s\n", cudaGetErrorString(error));
     exit(1);
   }
 }
@@ -102,7 +81,7 @@ Task &Task::operator=(const Task &task) {
 
   auto error = cudaGetLastError();
   if (error != cudaSuccess) {
-    printf("1123 %s\n", cudaGetErrorString(error));
+    printf("Task::operator=: GPU error %s\n", cudaGetErrorString(error));
     exit(1);
   }
 }
@@ -116,7 +95,7 @@ Task::Task(PathVec path) : m_vecSize(path.size()) {
 
   auto error = cudaGetLastError();
   if (error != cudaSuccess) {
-    printf(" 17 %s\n", cudaGetErrorString(error));
+    printf("Task: GPU error %s\n", cudaGetErrorString(error));
     exit(1);
   }
 }
@@ -132,14 +111,14 @@ double Task::GetResult() {
   cudaDeviceSynchronize();
   auto error = cudaGetLastError();
   if (error != cudaSuccess) {
-    printf(" 2  %s\n", cudaGetErrorString(error));
+    printf("Task::GetResult: GPU error %s\n", cudaGetErrorString(error));
     exit(1);
   }
   double *result = (double *)malloc(sizeof(double));
   cudaMemcpy(result, m_resutlMem, sizeof(double), cudaMemcpyDeviceToHost);
   cudaDeviceSynchronize();
   double res = *result;
-  printf("res2:%f \n", *result);
+  printf("Get result:%f \n", *result);
   free(result);
 
   return res;
